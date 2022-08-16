@@ -10,18 +10,11 @@ function MyApp({ Component, pageProps }) {
   const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
-    const hideContent = () => setAuthorized(false)
-    router.events.on('routeChangeStart', hideContent)
-    
-    authCheck({url: window.location.pathname})
-    return () => {
-      router.events.off('hashChangeStart', hideContent)
-    }
-    
-  }, [authCheck, router])
+    setAuthorized(false)
+    authCheck({ url: window.location.pathname })
+  }, [router, authCheck])
 
-  var authCheck = useCallback(({url}) => {
-    url = url ? url : window.location.pathname
+  var authCheck = useCallback(({ url }) => {
     setUser(userService.userValue)
     const path = url.split('?')[0]
     if (!userService.userValue && !publicPaths.includes(path)) {
@@ -30,7 +23,7 @@ function MyApp({ Component, pageProps }) {
     } else {
       setAuthorized(true)
     }
-  }, [router])
+  }, [setAuthorized, router])
 
   return (authorized && <Component {...pageProps} />)
 }
