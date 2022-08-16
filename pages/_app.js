@@ -10,15 +10,12 @@ function MyApp({ Component, pageProps }) {
   const [authorized, setAuthorized] = useState(false)
 
   useEffect(() => {
-    authCheck({url: window.location.pathname})
-
     const hideContent = () => setAuthorized(false)
     router.events.on('routeChangeStart', hideContent)
-    router.events.on('routeChangeComplete', authCheck)
-
+    
+    authCheck({url: window.location.pathname})
     return () => {
       router.events.off('hashChangeStart', hideContent)
-      router.events.off('hashChangeComplete', authCheck)
     }
     
   }, [authCheck, router])
