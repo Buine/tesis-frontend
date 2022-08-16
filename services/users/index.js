@@ -12,20 +12,26 @@ const userService = {
     signUp
 }
 
-function logIn(userLoginData) {
-    return LogInService(userLoginData).then(response => {
-        if (response.ok) {
-            response.json().then(userData => {
-                userSubject.next(userData)
-                localStorage.setItem("Authorization", response.headers.get("Authorization"))
-                localStorage.setItem("User", JSON.stringify(userData))
-            })
-        }
-    })
+async function logIn(userLoginData) {
+    let response = await LogInService(userLoginData)
+    let userData = await response.json()
+    if (response.status < 400) {
+        userSubject.next(userData)
+        localStorage.setItem("Authorization", response.headers.get("Authorization"))
+        localStorage.setItem("User", JSON.stringify(userData))
+    } else {
+        return {res: null, err: userData}
+    }
+    return {res: userData, err: null}
 }
 
-function signUp (userSignUpData) {
-    return SignUpService(userSignUpData)
+async function signUp (userSignUpData) {
+    let response = await SignUpService(userSignUpData)
+    let userData = await response.json()
+    if (response.status >= 400) {
+        return {res: null, err: userData}
+    }
+    return {res: userData, err: null}
 }
 
 function logOut()  {

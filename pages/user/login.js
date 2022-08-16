@@ -15,9 +15,14 @@ export default function Login() {
     const handleSubmit = (e) => {
         e.preventDefault();
         return userService
-        .logIn(userLoginData).then(() => {
-            router.push("/")
-        }).catch(err => console.error(err))
+        .logIn(userLoginData).then((response) => {
+            if (!response.err) {
+                router.push("/")
+            } else {
+                alert(JSON.stringify(response.err))
+                console.error(response.err)
+            }
+        })
     }
 
     return (
