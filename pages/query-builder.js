@@ -7,24 +7,27 @@ import { useRouter } from "next/router";
 import integrationService from "../services/integrations";
 import queryService from "../services/queries";
 import Filter from "../components/Filter/Filter";
+import TableInput from "../components/TableInput/TableInput";
 
 export default function QueryBuilder() {
     const router = useRouter()
     const { integration } = router.query
-    const { queryBuilderData, setQueryBuilderData, setQueryResult, queryResult } = useQueryBuilderContext()
+    const { queryBuilderData, setQueryBuilderData, setQueryResult, queryResult, valuesUi, dataUi, setValuesUi, setDataUi  } = useQueryBuilderContext()
     
     useEffect(() => {
-        if (integration) {
+        if (integration && queryBuilderData.schema == undefined) {
             integrationService.getSchemaByCode(integration).then(response => {
                 if (!response.err) {
-                    setQueryBuilderData({
+                    let copy = {
                         ...queryBuilderData,
                         schema: response.res,
                         queryRequest: {
                             ...queryBuilderData.queryRequest,
                             integration_code: integration
                         }
-                    })
+                    }
+                    setQueryBuilderData(copy)
+                    setDataInit(copy.schema, dataUi, setDataUi)
                 } else {
                     alert(JSON.stringify(response.err))
                     console.error(response.err)
@@ -53,6 +56,7 @@ export default function QueryBuilder() {
                     <div className={styles.tools_container_child}>
                         <ContainerDropdown text="Tables">
                             <div className={styles.tables_container}>
+                                <TableInput/>
                                 <label>From</label>
                                 <select name="table_initial" id="table_intial" onChange={(e) => setMainTable(e, queryBuilderData, setQueryBuilderData, setQueryResult)}>
                                     {getListTables(queryBuilderData)}
@@ -156,4 +160,21 @@ function executeQuery(queryBuilderData, setQueryResult) {
             console.error(response.err)
         }
     })
+}
+
+function setDataInit(schema, dataUi, setDataUi) {
+    let copyDataUi = {...dataUi}
+    if (schema) {
+        copyDataUi.availableTables = schema.schemas.map((currentSchema,schemaIdx) => {
+            return currentSchema.map((table, tableIdx) => {
+                return {
+                    name: `${currentSchema.name}.${table.name}`,
+                    schemaIndex: schemaIdx,
+                    tableIndex: tableIdx,
+                    foreignKeys: currentSchema.foreign_key
+                }
+            })
+        })
+        setDataUi(copyDataUi)
+    }
 }

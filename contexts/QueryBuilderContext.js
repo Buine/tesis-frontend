@@ -21,14 +21,28 @@ export const QueryBuilderProvider = ({children}) => {
         },
         tablesInSchema:[]
     })
+
     const [queryResult, setQueryResult] = useState([])
+    const [valuesUi, setValuesUi] = useState({
+        tables: {type: "DEFAULT"}, 
+        filters: []
+    })
+    const [dataUi, setDataUi] = useState({
+        availableTables: [],
+        availableColumns: [],
+        availableQueryColumns: []
+    })
 
     const values = useMemo(() => ({
         queryBuilderData,
         setQueryBuilderData,
         queryResult,
-        setQueryResult
-    }), [queryBuilderData, queryResult])
+        setQueryResult,
+        valuesUi,
+        setValuesUi,
+        dataUi, 
+        setDataUi,
+    }), [queryBuilderData, queryResult, valuesUi, dataUi])
 
     return (
         <QueryBuilderContext.Provider value={values}>
