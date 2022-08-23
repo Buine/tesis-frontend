@@ -1,5 +1,7 @@
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
+import Header from '../components/Header/Header'
+import { QueryBuilderProvider } from '../contexts/QueryBuilderContext'
 import userService from '../services/users'
 import '../styles/globals.css'
 import publicPaths from '../utils/routesPublicCatalog'
@@ -25,7 +27,14 @@ function MyApp({ Component, pageProps }) {
     }
   }, [setAuthorized, router])
 
-  return (authorized && <Component {...pageProps} />)
+  return (authorized && 
+  <div>
+    <QueryBuilderProvider>
+      {user && <Header userData={user}/>}
+      <Component {...pageProps} />
+    </QueryBuilderProvider>
+  </div>
+  )
 }
 
 export default MyApp

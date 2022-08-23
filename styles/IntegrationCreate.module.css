@@ -1,0 +1,74 @@
+.main {
+    max-height: calc(100vh - 60px);
+    height: 100%;
+    padding-top: 60px;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.main h3 {
+    font-size: 18.2px;
+    font-weight: 600;
+    margin: 2px
+}
+
+.main p {
+    font-size: 14px;
+    margin: 2px;
+}
+
+.window {
+    margin-top: 20px;
+    width: calc(100vw - 4rem);
+    max-width: 750px;
+    min-height: 516px;
+    border: 2px solid black;
+    background-color: white;
+    box-shadow: 10px 10px #D9D9D9;
+}
+
+.window_toolbar {
+    height: 36px;
+    border-bottom: 2px solid black;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px;
+    background-color: #F8F3FF;
+}
+
+.window_circle {
+    height: 15px;
+    width: 15px;
+    border: 2px solid black;
+    border-radius: 15px;
+    margin-right: 5px;
+}
+
+.window_container {
+    height: 100%;
+}
+
+.window_container form {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    height: 100%;
+}
+
+.label_bold {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.label {
+    margin-top: 5px;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+@media screen and (max-width: 500px) {
+    .shadow {
+        display: none;
+    }
+}
