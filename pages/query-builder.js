@@ -165,8 +165,9 @@ function executeQuery(queryBuilderData, setQueryResult) {
 function setDataInit(schema, dataUi, setDataUi) {
     let copyDataUi = {...dataUi}
     if (schema) {
-        copyDataUi.availableTables = schema.schemas.map((currentSchema,schemaIdx) => {
-            return currentSchema.map((table, tableIdx) => {
+        console.log(schema, "etest")
+        copyDataUi.availableTables = schema.schemas.map((currentSchema, schemaIdx) => {
+            return currentSchema.tables.map((table, tableIdx) => {
                 return {
                     name: `${currentSchema.name}.${table.name}`,
                     schemaIndex: schemaIdx,
@@ -174,7 +175,8 @@ function setDataInit(schema, dataUi, setDataUi) {
                     foreignKeys: currentSchema.foreign_key
                 }
             })
-        })
+        })[0]
+
         setDataUi(copyDataUi)
     }
 }

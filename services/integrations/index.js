@@ -1,6 +1,6 @@
 import validateRequest from "../../utils/validateRequest"
 import CreateIntegration from "./createIntegration"
-import GetAllIntegrations from "./getAllIntegration"
+import GetAllIntegrations from "./getAllIntegrations"
 import GetSchemaByCode from "./getSchemaByCode"
 import GetIntegrationByCode from "./getIntegrationByCode"
 

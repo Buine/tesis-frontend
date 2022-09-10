@@ -2,7 +2,7 @@ import { HotTable } from '@handsontable/react';
 import { registerAllModules } from 'handsontable/registry';
 import 'handsontable/dist/handsontable.full.css';
 import useQueryBuilderContext from '../../contexts/QueryBuilderContext';
-import { createRef, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 registerAllModules()
 
@@ -28,16 +28,22 @@ export default function HotComponent() {
 
   return (
         <HotTable
-          data={queryResult ? queryResult : []}
+          data={[
+            ["", "Tesla", "Volvo", "Toyota", "Honda"],
+            ["2020", 10, 11, 12, 13],
+            ["2021", 20, 11, 14, 13],
+            ["2022", 30, 15, 12, 13]
+          ]}
           colHeaders={true}
           rowHeaders={false}
+          
           multiColumnSorting={true}
           manualColumnResize={true}
           beforeColumnSort={(currentSortConfig, destinationSortConfigs) => {
               console.log(currentSortConfig)
               console.log(destinationSortConfigs)
           }}
-          columns={columns}
+          // columns={[columns]}
           readOnly={true}
           stretchH='all'
           licenseKey="non-commercial-and-evaluation"

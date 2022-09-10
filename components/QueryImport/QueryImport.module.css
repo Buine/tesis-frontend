@@ -1,0 +1,87 @@
+.container {
+    width: 100%;
+    padding: 15px 10px;
+    border: 2px solid black;
+    border-top: 0;
+    border-right: 0;
+    border-left: 0;
+}
+
+.input_div {
+    font-size: 13px;
+    font-weight: 400;
+    display: flex;
+    flex-direction: column;
+}
+
+.input_div:not(:first-child) {
+    margin-top: 10px;
+}
+
+.input_div:last-child {
+    margin-bottom: 5px;
+}
+
+.input {
+    border: none;
+    border-radius: 0;
+    background-color: #EBEBEB;
+    height: 30px;
+    font-size: 13px;
+    padding: 0 8px;
+}
+
+.condition_div {
+    display: flex;
+    margin-top: 7px;
+}
+
+.condition_inputs_div {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.condition_style_div {
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    text-align: left;
+    transform: translateX(-4px);
+}
+
+.corner_left_top {
+    border: 2px solid black;
+    height: 15px;
+    width: 13px;
+    border-bottom: 0;
+    border-right: 0;
+    margin-left: 7px;
+}
+
+.corner_left_bottom {
+    border: 2px solid black;
+    height: 15px;
+    width: 13px;
+    border-top: 0;
+    border-right: 0;
+    margin-left: 7px;
+}
+
+.condition_select:first-child {
+    margin-bottom: 5px;
+}
+
+.condition_select:last-child {
+    margin-top: 5px;
+}
+
+.label_alt_title label {
+    margin-top: 10px;
+}
+
+.label_alt_title label {
+    margin-right: 6px;
+}
