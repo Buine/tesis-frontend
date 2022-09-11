@@ -85,3 +85,14 @@
 .label_alt_title label {
     margin-right: 6px;
 }
+
+.delete_button {
+    margin-top: 5px;
+    height: 30px;
+    background: rgb(234, 234, 234);
+    border: 0;
+    border-radius: 0px;
+    color: rgb(0, 0, 0);
+    font-size: 12px;
+    cursor: pointer;
+}

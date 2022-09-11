@@ -34,6 +34,7 @@ export default function HotComponent() {
             ["2021", 20, 11, 14, 13],
             ["2022", 30, 15, 12, 13]
           ]}
+          //data={queryResult ? queryResult : []}
           colHeaders={true}
           rowHeaders={false}
           

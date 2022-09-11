@@ -79,6 +79,39 @@ export default function QueryImport({type, idxImport = 0}) {
       setValuesUi(copy)
     }
 
+    const deleteImport = () => {
+      let validation = confirm("Are you sure you delete the data import?")
+      if (validation == false) { return }
+      let copy = {...valuesUi}
+      let imports = copy.tables
+      if (imports) {
+        if (imports[idxImport]) {
+          let dependecies = []
+          if (imports[idxImport].value){
+            dependecies = imports.filter((tableImport, idx) => {
+              if (tableImport.join && idx != idxImport) {
+                let searchDependency = tableImport.join.filter((join) => {
+                  if (join.value) {
+                    let [schema, table] = join.value.split(".")
+                    return `${schema}.${table}` == imports[idxImport].value
+                  }
+                  return false
+                })
+                return searchDependency.length > 0
+              }
+              return false
+            })
+          }
+          if (dependecies.length == 0) {
+            imports = imports.splice(idxImport, 1)
+            setValuesUi(copy)
+          } else {
+            alert("It was not possible to delete because it has a dependency with the import of other tables.")
+          }
+        }
+      }
+    }
+
     const setAliasTableValue = (evt) => {
       let alias = evt.target.value
       let copy = {...valuesUi}
@@ -226,9 +259,14 @@ export default function QueryImport({type, idxImport = 0}) {
                                 />
                             </div>
                         </div>
-                        
                     </div>
                 </div>}
+                { idxImport != 0 && <div className={styles.input_div}>
+                  <button 
+                    className={styles.delete_button}
+                    onClick={deleteImport}
+                  >╳ Delete</button>
+                </div> }
             </div>
         </ContainerDropdownV2>
     )
