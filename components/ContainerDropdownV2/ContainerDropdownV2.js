@@ -3,7 +3,7 @@ import ArrowDropdown from "../../utils/svg/ArrowDropdown";
 import styles from "./ContainerDropdownV2.module.css"
 
 export default function ContainerDropdownV2({title, subtitle, children}) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(true)
 
     const handleAction = () => {
         setOpen(!open) 

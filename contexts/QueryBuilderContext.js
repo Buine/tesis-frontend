@@ -24,10 +24,11 @@ export const QueryBuilderProvider = ({children}) => {
 
     const [queryResult, setQueryResult] = useState([])
     const [valuesUi, setValuesUi] = useState({
-        tables: {type: "DEFAULT"}, 
+        tables: [{type: "MAIN", value: null, alias: ""}], 
         filters: []
     })
     const [dataUi, setDataUi] = useState({
+        listNativeTables: [],
         availableTables: [],
         availableColumns: [],
         availableQueryColumns: []
