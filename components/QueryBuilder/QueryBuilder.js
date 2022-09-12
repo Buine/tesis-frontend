@@ -1,11 +1,13 @@
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
+import useQueryBuilderContext from "../../contexts/QueryBuilderContext";
 import FooterTable from "../FooterTable/FooterTable";
 import QueryDataPanel from "../QueryDataPanel/QueryDataPanel"
 import QueryToolbar from "../QueryToolbar/QueryToolbar"
 import styles from "./QueryBuilder.module.css"
 
 export default function QueryBuilder() {
+    const { queryResult } = useQueryBuilderContext()
 
     const HotTableNoSSR = useMemo(() => dynamic(
         () => import("../HotTable/HotTable"),
@@ -17,7 +19,8 @@ export default function QueryBuilder() {
             },
             ssr: false
         }
-      ), []);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      ), [queryResult]);
 
     return <div className={styles.container}>
         <QueryDataPanel />

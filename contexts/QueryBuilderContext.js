@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo, useState } from "react";
+import uuidv4 from "../utils/uuidGenerator";
 
 export const QueryBuilderContext = createContext(null)
 
@@ -22,9 +23,9 @@ export const QueryBuilderProvider = ({children}) => {
         tablesInSchema:[]
     })
 
-    const [queryResult, setQueryResult] = useState([])
+    const [queryResult, setQueryResult] = useState({response: []})
     const [valuesUi, setValuesUi] = useState({
-        tables: [{type: "MAIN", value: null, alias: ""}], 
+        tables: [{type: "MAIN", value: null, alias: "", id: uuidv4()}], 
         filters: []
     })
     const [dataUi, setDataUi] = useState({

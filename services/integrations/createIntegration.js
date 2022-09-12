@@ -6,7 +6,8 @@ const CreateIntegration = async (requestBody) => {
         credentials: 'omit',
         body: JSON.stringify(requestBody),
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Authorization': localStorage.getItem("Authorization")
         }
     })
 

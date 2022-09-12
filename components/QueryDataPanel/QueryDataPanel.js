@@ -1,4 +1,5 @@
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext"
+import uuidv4 from "../../utils/uuidGenerator"
 import QueryImport from "../QueryImport/QueryImport"
 import styles from "./QueryDataPanel.module.css"
 
@@ -10,7 +11,8 @@ export default function QueryDataPanel() {
         copy.tables.push({
             type: "TABLE",
             value: null,
-            alias: ""
+            alias: "",
+            id: uuidv4()
         })
 
         setValuesUi(copy)

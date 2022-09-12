@@ -1,6 +1,7 @@
 import SelectSearch from "react-select-search"
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext";
 import InfoIcon from "../../utils/svg/InfoIcon";
+import uuidv4 from "../../utils/uuidGenerator";
 import ContainerDropdownV2 from "../ContainerDropdownV2/ContainerDropdownV2"
 import styles from "./QueryImport.module.css"
 
@@ -48,11 +49,11 @@ const handleFilter = (items) => {
 }; 
 
 export default function QueryImport({type, idxImport = 0}) {
-    const { queryBuilderData, dataUi, valuesUi, setValuesUi } = useQueryBuilderContext()
+    const { queryBuilderData, setQueryBuilderData, dataUi, valuesUi, setValuesUi } = useQueryBuilderContext()
     let title = textByTypes[type]
     let isMain = type == "MAIN"
     let isQuery = type == "QUERY"
-
+    
     const getTableParam = (param = "value") => {
       if (valuesUi.tables) {
         if (valuesUi.tables[idxImport]) {
@@ -66,10 +67,10 @@ export default function QueryImport({type, idxImport = 0}) {
       if (value == null || value == undefined) { return }
       let copy = {...valuesUi}
       if (copy.tables == undefined) {
-        copy.tables = [{type, value, alias: ""}]
+        copy.tables = [{type, value, alias: "", id: uuidv4()}]
       } else {
         if (copy.tables[idxImport] == undefined) {
-          copy.tables[idxImport] = {type, value, alias: ""}
+          copy.tables[idxImport] = {type, value, alias: "", id: uuidv4()}
         } else {
           copy.tables[idxImport].value = value
         }
@@ -139,7 +140,7 @@ export default function QueryImport({type, idxImport = 0}) {
           if (currentTable.join) {
             currentTable.join[idxJoin].value = value
           } else {
-            currentTable.join = isColumnTableImport ? [{value: value}, {value: null}] : [{value: null}, {value: value}]
+            currentTable.join = isColumnTableImport ? [{value: value, idxImport}, {value: null}] : [{value: null}, {value: value}]
           }
         }
       }
@@ -180,7 +181,7 @@ export default function QueryImport({type, idxImport = 0}) {
             currentTableColumns.forEach((currentColumn, idxColumn) => {
               listColumns.push({
                 name: currentColumn.name,
-                value: `${idxSchema}.${idxTable}.${idxColumn}`
+                value: `${idxSchema}.${idxTable}.${idxColumn}.${table.id}`
               })
             })
             listAvailableColumns.push({
