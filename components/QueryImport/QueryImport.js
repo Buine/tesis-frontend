@@ -49,7 +49,7 @@ const handleFilter = (items) => {
 }; 
 
 export default function QueryImport({type, idxImport = 0}) {
-    const { queryBuilderData, setQueryBuilderData, dataUi, valuesUi, setValuesUi } = useQueryBuilderContext()
+    const { queryBuilderData, dataUi, valuesUi, setValuesUi } = useQueryBuilderContext()
     let title = textByTypes[type]
     let isMain = type == "MAIN"
     let isQuery = type == "QUERY"
@@ -75,7 +75,28 @@ export default function QueryImport({type, idxImport = 0}) {
           copy.tables[idxImport].value = value
         }
       }
-      console.log(valuesUi)
+
+      // Generate columns
+      copy.columns = copy.columns.filter(column => column.import_id != copy.tables[idxImport].id)
+      copy.columns.forEach((column, idx) => column.id = idx+1)
+
+      let newColumnId = copy.columns.length+1
+      let [schema, table] = value.split(".")
+      let columns = queryBuilderData.schema.schemas[schema].tables[table].columns
+      let newColumns = []
+      columns.forEach((column, idx) => {
+        newColumns.push({
+          id: newColumnId+idx,
+          name: `${copy.tables[idxImport].alias}.${column.name}`,
+          alias: copy.tables[idxImport].alias,
+          value: `${schema}.${table}.${idx}.${copy.tables[idxImport].id}`,
+          import_id: copy.tables[idxImport].id,
+          status: true
+        })
+      })
+      copy.columns = [...copy.columns, ...newColumns]
+
+      console.log(copy)
       
       setValuesUi(copy)
     }
@@ -104,6 +125,8 @@ export default function QueryImport({type, idxImport = 0}) {
             })
           }
           if (dependecies.length == 0) {
+            copy.columns = copy.columns.filter(column => column.import_id != copy.tables[idxImport].id)
+            copy.columns.forEach((column, idx) => column.id = idx+1)
             imports = imports.splice(idxImport, 1)
             setValuesUi(copy)
           } else {
@@ -125,6 +148,19 @@ export default function QueryImport({type, idxImport = 0}) {
           copy.tables[idxImport].alias = alias
         }
       }
+
+      //Rename alias columns
+      copy.columns.forEach(column => {
+        if (column.import_id == copy.tables[idxImport].id) {
+          if (column.alias == '') {
+            column.name = `${alias}${column.name}`
+          } else {
+            column.name = column.name.replace(column.alias, alias)
+          }
+          column.alias = alias
+        }
+      })
+
       console.log(copy)
       
       setValuesUi(copy)

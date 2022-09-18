@@ -1,5 +1,7 @@
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext"
 import queryService from "../../services/queries"
+import DropdownMenu from "../DropdownMenu/DropdownMenu"
+import HideFieldsComponent from "../HideFieldsComponent/HideFieldsComponent"
 import styles from "./QueryToolbar.module.css"
 
 export default function QueryToolbar() {
@@ -15,6 +17,7 @@ export default function QueryToolbar() {
         let tables = query.query_json.tables
         let schemas = queryBuilderData.schema.schemas
         let importedTables = valuesUi.tables
+        // From
         if (importedTables) {
           importedTables.forEach((table, idx) => {
             if (table.value == null) { return }
@@ -48,6 +51,26 @@ export default function QueryToolbar() {
             tables = tables.join
           })
   
+          // Select
+          let columns = []
+          let selectColumns = valuesUi.columns
+          selectColumns.forEach(column => {
+            if (column.alias != "" && column.status) {
+              let [idxSchema, idxTable, idxColumn, idImport] = column.value.split(".")
+              columns.push({
+                type: "COLUMN",
+                table_column: {
+                  schema_name: schemas[idxSchema].name,
+                  table_name: schemas[idxSchema].tables[idxTable].name,
+                  column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name} AS ${column.name}`, //TODO: Delete AS when in ms accept column_alias
+                  alias: column.alias,
+                  column_alias: column.name
+                }
+              })
+            }
+          })
+          query.query_json.columns = columns
+
           console.log(copy)
           setQueryBuilderData(copy)
           executeQuery(copy, setQueryResult)
@@ -56,10 +79,24 @@ export default function QueryToolbar() {
 
     return <div className={styles.container}>
         <div className={styles.tools}>
-            <div className={styles.tool}>Hide fields</div>
-            <div className={styles.tool}>Filter</div>
-            <div className={styles.tool}>Group</div>
-            <div className={styles.tool}>Sort</div>
+          <DropdownMenu actionComponent={<div className={styles.tool}>Hide fields</div>}>
+            <HideFieldsComponent/>
+          </DropdownMenu>
+          <DropdownMenu actionComponent={<div className={styles.tool}>Filter</div>}>
+            <div>
+              Aqui el body  
+            </div>  
+          </DropdownMenu>
+          <DropdownMenu actionComponent={<div className={styles.tool}>Group</div>}>
+            <div>
+              Aqui el body  
+            </div>  
+          </DropdownMenu>
+          <DropdownMenu actionComponent={<div className={styles.tool}>Sort</div>}>
+            <div>
+              Aqui el body  
+            </div>  
+          </DropdownMenu>
         </div>
         <div className={styles.save_button} onClick={generateQueryJson}>
             Save Query

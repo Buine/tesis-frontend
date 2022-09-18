@@ -25,6 +25,7 @@ export const QueryBuilderProvider = ({children}) => {
 
     const [queryResult, setQueryResult] = useState({response: []})
     const [valuesUi, setValuesUi] = useState({
+        columns: [],
         tables: [{type: "MAIN", value: null, alias: "", id: uuidv4()}], 
         filters: []
     })

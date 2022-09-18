@@ -8,7 +8,7 @@ registerAllModules()
 
 export default function HotComponent() {
 
-  const { queryResult } = useQueryBuilderContext()
+  const { queryResult, valuesUi } = useQueryBuilderContext()
   const [columns, setColumns] = useState([])
 
   useEffect(() => {
@@ -17,15 +17,25 @@ export default function HotComponent() {
 
   const getColumns = useCallback(() => {
     let columns = []
-    if (queryResult && queryResult.response.length > 0) {
-      columns = Object.keys(queryResult.response ? queryResult.response[0] : {}).map(key => {
-        return {data: key, title: key}
-      })
+    if (valuesUi.columns.length > 0) {
+      valuesUi.columns.forEach(column => {
+        if (column.alias != "" && column.status) {
+          columns.push({
+            data: column.name,
+            title: column.name
+          })
+        }
+      });
     }
+    // if (queryResult && queryResult.response.length > 0) {
+    //   columns = Object.keys(queryResult.response ? queryResult.response[0] : {}).map(key => {
+    //     return {data: key, title: key}
+    //   })
+    // }
     console.log(queryResult)
 
     return columns
-  }, [queryResult])
+  }, [queryResult, valuesUi.columns])
 
   return (
         <HotTable
