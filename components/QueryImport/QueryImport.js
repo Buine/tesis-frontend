@@ -1,5 +1,7 @@
 import SelectSearch from "react-select-search"
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext";
+import { handleFilter } from "../../utils/HandleFilterSelect";
+import MapperTypeDbToPrimitive from "../../utils/MapperTypeDatabaseToPrimitive";
 import InfoIcon from "../../utils/svg/InfoIcon";
 import uuidv4 from "../../utils/uuidGenerator";
 import ContainerDropdownV2 from "../ContainerDropdownV2/ContainerDropdownV2"
@@ -30,23 +32,6 @@ const options = [
     ]
   }
 ];
-
-const handleFilter = (items) => {
-  return (searchValue) => {
-    if (searchValue.length === 0) {
-      return items;
-    }
-    let updatedItems = []
-    items.forEach((list) => {
-      if (list.items == undefined) { return }
-      const newItems = list.items.filter((item) => {
-        return item.name.toLowerCase().includes(searchValue.toLowerCase());
-      });
-      updatedItems.push({ ...list, items: newItems });
-    });
-    return updatedItems;
-  };
-}; 
 
 export default function QueryImport({type, idxImport = 0}) {
     const { queryBuilderData, dataUi, valuesUi, setValuesUi } = useQueryBuilderContext()
@@ -91,6 +76,7 @@ export default function QueryImport({type, idxImport = 0}) {
           alias: copy.tables[idxImport].alias,
           value: `${schema}.${table}.${idx}.${copy.tables[idxImport].id}`,
           import_id: copy.tables[idxImport].id,
+          data_type: MapperTypeDbToPrimitive(column.data_type),
           status: true
         })
       })

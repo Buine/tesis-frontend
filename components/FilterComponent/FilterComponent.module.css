@@ -1,0 +1,24 @@
+.container {
+    display: flex;
+    align-items: center;
+    min-width: calc(100% - 10px);
+    min-height: 30px;
+}
+
+.container:not(:first-child) div {
+    margin-right: 6px;
+}
+
+.input {
+    border: none;
+    border-radius: 0;
+    background-color: #EBEBEB;
+    height: 30px;
+    font-size: 12px;
+    padding: 0 8px;
+
+    /* Ineed adjust for simetry */
+    min-width: 149px;
+    margin-right: 6px;
+    width: calc(100% - 5.5px);
+}

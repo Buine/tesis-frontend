@@ -1,6 +1,7 @@
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext"
 import queryService from "../../services/queries"
 import DropdownMenu from "../DropdownMenu/DropdownMenu"
+import FilterMenu from "../FilterMenu/FilterMenu"
 import HideFieldsComponent from "../HideFieldsComponent/HideFieldsComponent"
 import styles from "./QueryToolbar.module.css"
 
@@ -71,6 +72,9 @@ export default function QueryToolbar() {
           })
           query.query_json.columns = columns
 
+          // Filters
+          // Logic implementation here...
+
           console.log(copy)
           setQueryBuilderData(copy)
           executeQuery(copy, setQueryResult)
@@ -83,9 +87,7 @@ export default function QueryToolbar() {
             <HideFieldsComponent/>
           </DropdownMenu>
           <DropdownMenu actionComponent={<div className={styles.tool}>Filter</div>}>
-            <div>
-              Aqui el body  
-            </div>  
+            <FilterMenu />
           </DropdownMenu>
           <DropdownMenu actionComponent={<div className={styles.tool}>Group</div>}>
             <div>

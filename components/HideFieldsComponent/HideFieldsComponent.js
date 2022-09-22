@@ -1,6 +1,7 @@
 import { SortableItem, SortableList } from "@omakase-ui/react-sortable-list";
 import { useState } from "react";
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext";
+import DragHandler from "../../utils/DragHandler";
 import Slider from "../Slider/Slider";
 import styles from "./HideFieldsComponent.module.css"
 
@@ -25,7 +26,8 @@ export default function HideFieldsComponent() {
                     return <div key={idx} className={styles.field_detail_2}>
                         <Slider status={item.status} setStatus={() => {
                             let copy = {...valuesUi}
-                            copy.columns[item.id-1].status = !copy.columns[item.id-1].status
+                            let find = copy.columns.find(column => column.value == item.value)
+                            find.status = !find.status
                             setValuesUi(copy)
                             console.log(copy)
                         }}/>
@@ -70,9 +72,3 @@ export default function HideFieldsComponent() {
     </div>
     </>
 }
-
-const DragHandler = (props) => (
-    <div {...props} style={{cursor: "pointer"}}>
-        ☰
-    </div>
-);
