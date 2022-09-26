@@ -9,8 +9,12 @@ export const filtersByTypeData = {
     "TEXT": [
         { name: "Select condition...", value: ""},
         { name: "is", value: "EQ_INPUT" },
+        { name: "is not", value: "NOT_EQ_INPUT" },
         { name: "is field", value: "EQ_COLUMN" },
+        { name: "is not field", value: "NOT_EQ_COLUMN" },
         { name: "contains", value: "ILIKE_INPUT" },
+        { name: "does not contains", value: "NOT_ILIKE_INPUT" },
+        { name: "does not contains field", value: "NOT_ILIKE_COLUMN" },
         { name: "contains field", value: "ILIKE_COLUMN" },
         { name: "is null", value: "NULL" },
         { name: "is not null", value: "NOT_NULL" }
@@ -27,8 +31,8 @@ export const filtersByTypeData = {
         { name: ">= field", value: "GREATER_EQ_COLUMN" },
         { name: "<=", value: "LESS_EQ_INPUT" },
         { name: "<= field", value: "LESS_EQ_COLUMN" },
-        { name: "!=", value: "DIFF_INPUT" },
-        { name: "!= field", value: "DIFF_COLUMN" },
+        { name: "!=", value: "NOT_EQ_INPUT" },
+        { name: "!= field", value: "NOT_EQ_COLUMN" },
         { name: "is null", value: "NULL" },
         { name: "is not null", value: "NOT_NULL" }
     ],
@@ -47,7 +51,7 @@ export const filtersByTypeData = {
             {name: "number of days ago", value: "DAYS_AGO_INPUT"},
             {name: "number of days from now", value: "DAYS_FROM_NOW_INPUT"},
         ]},
-        { name: "is before", value: "EQ_BEFORE_SELECT", select: [
+        { name: "is before", value: "LESS_SELECT", select: [
             {name: "Select condition...", value: ""},
             {name: "exact date", value: "EQ_DATEPICKER"},
             {name: "today", value: "TODAY"},
@@ -60,7 +64,7 @@ export const filtersByTypeData = {
             {name: "number of days ago", value: "DAYS_AGO_INPUT"},
             {name: "number of days from now", value: "DAYS_FROM_NOW_INPUT"},
         ]},
-        { name: "is after", value: "EQ_AFTER_SELECT", select: [
+        { name: "is after", value: "GREATER_SELECT", select: [
             {name: "Select condition...", value: ""},
             {name: "exact date", value: "EQ_DATEPICKER"},
             {name: "today", value: "TODAY"},
@@ -73,7 +77,7 @@ export const filtersByTypeData = {
             {name: "number of days ago", value: "DAYS_AGO_INPUT"},
             {name: "number of days from now", value: "DAYS_FROM_NOW_INPUT"},
         ]},
-        { name: "is on before", value: "EQ_ON_BEFORE_SELECT", select: [
+        { name: "is on before", value: "LESS_EQ_SELECT", select: [
             {name: "Select condition...", value: ""},
             {name: "exact date", value: "EQ_DATEPICKER"},
             {name: "today", value: "TODAY"},
@@ -86,7 +90,7 @@ export const filtersByTypeData = {
             {name: "number of days ago", value: "DAYS_AGO_INPUT"},
             {name: "number of days from now", value: "DAYS_FROM_NOW_INPUT"},
         ]},
-        { name: "is on after", value: "EQ_ON_AFTER_SELECT", select: [
+        { name: "is on after", value: "GREATER_EQ_SELECT", select: [
             {name: "Select condition...", value: ""},
             {name: "exact date", value: "EQ_DATEPICKER"},
             {name: "today", value: "TODAY"},

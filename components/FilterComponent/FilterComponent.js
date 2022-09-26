@@ -64,8 +64,14 @@ export default function FilterComponent({ idxFilter, filter }) {
                     <div style={{ maxWidth: "62px" }}><SelectSearch options={unionOptionsLogic} filterOptions={handleFilterWithoutGroup} value={filter.gate} onChange={setFilterParam("gate")} search /></div>
                 </div>
             }
-            <div style={{ maxWidth: "562px" }}><SelectSearch options={columnsOptions} filterOptions={handleFilterWithoutGroup} value={filter.left_column} onChange={setFilterParam("left_column")} search /></div>
-            <div style={{ maxWidth: "562px" }}><SelectSearch options={filtersByTypeData[typeData]} filterOptions={handleFilterWithoutGroup} value={filter.condition} onChange={setFilterParam("condition")} search /></div>
+            <div style={{ maxWidth: "562px" }}><SelectSearch options={columnsOptions} filterOptions={handleFilterWithoutGroup} value={filter.left_column} onChange={(left_column) => {
+                setFilterParam("left_column")(left_column)
+                setFilterParam("condition")("")
+            }} search /></div>
+            <div style={{ maxWidth: "562px" }}><SelectSearch options={filtersByTypeData[typeData]} filterOptions={handleFilterWithoutGroup} value={filter.condition} onChange={(condition) => {
+                setFilterParam("condition")(condition)
+                setFilterParam("input_value")("")
+            }} search /></div>
             {typeInput == "COLUMN" && <div style={{ maxWidth: "562px" }}><SelectSearch options={columnsOptions.filter(column => column.data_type == typeData)} filterOptions={handleFilterWithoutGroup} value={filter.input_column} onChange={setFilterParam("input_column")} search /></div>}
             {typeInput == "INPUT" && <div><input className={styles.input} value={filter.input_value} onChange={(evt) => { setFilterParam("input_value")(evt.target.value) }}></input></div>}
             {typeInput == "SELECT" && <div><SelectSearch options={listSubConditions} filterOptions={handleFilterWithoutGroup} value={filter.sub_condition} onChange={(sub_condition) => {
@@ -74,7 +80,10 @@ export default function FilterComponent({ idxFilter, filter }) {
             }} search /></div>}
             {(typeInput == "SELECT" && subConditionInput == "DATEPICKER") && <div>
                 <ReactDatePicker
-                    selected={filter.input_value == "" ? new Date() : filter.input_value}
+                    selected={filter.input_value == "" ? (() => {
+                        setFilterParam("input_value")(new Date())
+                        return new Date()
+                    })() : filter.input_value}
                     onChange={(date) => setFilterParam("input_value")(date)}
                     showTimeSelect
                     timeFormat="p"
