@@ -161,7 +161,6 @@ export default function QueryToolbar() {
                 }
               })
             } 
-            // Logic implementation here...
 
 
             if (condition != "") {
@@ -193,7 +192,7 @@ export default function QueryToolbar() {
           <DropdownMenu actionComponent={<div className={styles.tool}>Group</div>}>
             <div>
               Aqui el body  
-            </div>  52138816
+            </div>
           </DropdownMenu>
           <DropdownMenu actionComponent={<div className={styles.tool}>Sort</div>}>
             <div>

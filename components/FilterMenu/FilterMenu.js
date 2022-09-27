@@ -9,17 +9,42 @@ export default function FilterMenu({...props}) {
     const {valuesUi, setValuesUi} = useQueryBuilderContext()
     let filters = valuesUi.filters
 
-    const addFilter = () => {
+    const addFilter = (type = "FILTER") => {
         let copy = {...valuesUi}
-        copy.filters.push({
-            id: uuidv4(),
-            gate: "AND",
-            left_column: "",
-            condition: "",
-            sub_condition: "",
-            input_value: "",
-            input_column: ""
-        })
+        if (type != "GROUP") {
+            copy.filters.push({
+                type,
+                id: uuidv4(),
+                gate: "AND",
+                left_column: "",
+                condition: "",
+                sub_condition: "",
+                input_value: "",
+                input_column: ""
+            })
+        } else {
+            copy.filters.push({
+                type,
+                id: uuidv4(),
+                filters: [{
+                    type: "FILTER",
+                    id: uuidv4(),
+                    gate: "AND",
+                    left_column: "",
+                    condition: "",
+                    sub_condition: "",
+                    input_value: "",
+                    input_column: ""
+                }],
+                gate: "AND",
+                left_column: "",
+                condition: "",
+                sub_condition: "",
+                input_value: "",
+                input_column: ""
+            })
+        }
+        
 
         setValuesUi(copy)
     }
@@ -53,6 +78,7 @@ export default function FilterMenu({...props}) {
         </div>
         <div className={styles.buttons_controller}>
             <button className={styles.button} onClick={addFilter}>➕ Add filter</button>
+            <button className={styles.button} onClick={() => addFilter("GROUP")}>➕ Add group filter</button>
         </div>
     </>
 }

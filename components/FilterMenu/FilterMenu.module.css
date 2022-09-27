@@ -9,6 +9,8 @@
 
 .buttons_controller {
     display: flex;
+    justify-content: space-between;
+    width: 250px;
 }
 
 .button {
@@ -26,5 +28,6 @@
 .filter {
     display: flex;
     flex-direction: row-reverse;
+    justify-content: flex-end;
     align-items: center;
 }
