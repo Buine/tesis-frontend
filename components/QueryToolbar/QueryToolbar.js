@@ -73,104 +73,7 @@ export default function QueryToolbar() {
           query.query_json.columns = columns
 
           // Filters
-          // id: uuidv4(),
-          //   gate: "AND",
-          //   left_column: "",
-          //   condition: "",
-          //   sub_condition: "",
-          //   input_value: "",
-          //   input_column: ""
-          let filters = []
-          let currentFilters = valuesUi.filters
-          currentFilters.forEach(filter => {
-            let typeCondition = filter.condition.split("_")
-            typeCondition = typeCondition.length > 0 ? typeCondition[typeCondition.length-1] : ""
-            let condition = typeCondition 
-              ? filter.condition.replace(`_${typeCondition}`, "") 
-              : filter.condition
-
-            if (typeCondition == "SELECT") {
-              typeCondition = filter.sub_condition.split("_")
-              typeCondition = typeCondition.length > 0 ? typeCondition[typeCondition.length-1] : ""
-              let sub_condition = typeCondition 
-                ? filter.sub_condition.replace(`_${typeCondition}`, "") 
-                : filter.sub_condition
-            }
-
-            let params = []
-            
-            // Left column
-            let dataType = ""
-            if (filter.left_column != "") {
-              let [idxSchema, idxTable, idxColumn] = filter.left_column.split(".")
-              let column = valuesUi.columns.filter(column => column.value == filter.left_column)
-              console.log(column)
-              column = column.length > 0 ? column[0] : {}
-              dataType = column.data_type
-              params.push({
-                type: "COLUMN",
-                table_column: {
-                  schema_name: schemas[idxSchema].name,
-                  table_name: schemas[idxSchema].tables[idxTable].name,
-                  column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`, //TODO: Delete AS when in ms accept column_alias
-                  alias: column.alias,
-                  column_alias: column.name
-                }
-              })
-            }
-
-            if (["NULL", "NOT_NULL"].includes(filter.condition)) {
-              typeCondition = "INPUT"
-              filter.input_value = null
-              condition = filter.condition == "NULL" ? "IS" : "IS_NOT"
-              dataType = "NONE"
-           }
-
-           if (["TRUE", "FALSE"].includes(filter.condition)) {
-              typeCondition = "INPUT"
-              filter.input_value = filter.condition == "TRUE"
-              console.log(filter.input_value)
-              condition = "EQ"
-              dataType = "NONE"
-           }
-
-            // Right column
-            if (filter.input_column !== "" && typeCondition == "COLUMN") {
-              let [idxSchema, idxTable, idxColumn] = filter.input_column.split(".")
-              let column = valuesUi.columns.filter(column => column.value == filter.input_column)
-              column = column.length > 0 ? column[0] : {}
-              params.push({
-                type: "COLUMN",
-                table_column: {
-                  schema_name: schemas[idxSchema].name,
-                  table_name: schemas[idxSchema].tables[idxTable].name,
-                  column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`, //TODO: Delete AS when in ms accept column_alias
-                  alias: column.alias,
-                  column_alias: column.name
-                }
-              })
-            }
-
-            // Parameter
-            if (filter.input_value !== "" && typeCondition == "INPUT" || typeCondition == "DATEPICKER") {
-              params.push({
-                type: "PARAM",
-                param: {
-                  type_input: dataType,
-                  value: condition.includes("ILIKE") ? `%${filter.input_value}%` : filter.input_value
-                }
-              })
-            } 
-
-
-            if (condition != "") {
-              filters.push({
-                type: condition,
-                params,
-                gate_logic_previous: filter.gate
-              })
-            }
-          })
+          let filters = generateFilters(valuesUi.filters, schemas)
           query.query_json.filters = filters
           
 
@@ -179,6 +82,119 @@ export default function QueryToolbar() {
           setQueryBuilderData(copy)
           executeQuery(copy, setQueryResult)
         }
+    }
+
+    function generateFilters(currentFilters) {
+      // Filters
+      // id: uuidv4(),
+      //   gate: "AND",
+      //   left_column: "",
+      //   condition: "",
+      //   sub_condition: "",
+      //   input_value: "",
+      //   input_column: ""
+      let schemas = queryBuilderData.schema.schemas
+      let filters = []
+      currentFilters.forEach(filter => {
+        if (filter.type != "GROUP") {
+          let typeCondition = filter.condition.split("_")
+          typeCondition = typeCondition.length > 0 ? typeCondition[typeCondition.length-1] : ""
+          let condition = typeCondition 
+            ? filter.condition.replace(`_${typeCondition}`, "") 
+            : filter.condition
+
+          if (typeCondition == "SELECT") {
+            typeCondition = filter.sub_condition.split("_")
+            typeCondition = typeCondition.length > 0 ? typeCondition[typeCondition.length-1] : ""
+            let sub_condition = typeCondition 
+              ? filter.sub_condition.replace(`_${typeCondition}`, "") 
+              : filter.sub_condition
+          }
+
+          let params = []
+          
+          // Left column
+          let dataType = ""
+          if (filter.left_column != "") {
+            let [idxSchema, idxTable, idxColumn] = filter.left_column.split(".")
+            let column = valuesUi.columns.filter(column => column.value == filter.left_column)
+            console.log(column)
+            column = column.length > 0 ? column[0] : {}
+            dataType = column.data_type
+            params.push({
+              type: "COLUMN",
+              table_column: {
+                schema_name: schemas[idxSchema].name,
+                table_name: schemas[idxSchema].tables[idxTable].name,
+                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`, //TODO: Delete AS when in ms accept column_alias
+                alias: column.alias,
+                column_alias: column.name
+              }
+            })
+          }
+
+          if (["NULL", "NOT_NULL"].includes(filter.condition)) {
+            typeCondition = "INPUT"
+            filter.input_value = null
+            condition = filter.condition == "NULL" ? "IS" : "IS_NOT"
+            dataType = "NONE"
+          }
+
+          if (["TRUE", "FALSE"].includes(filter.condition)) {
+            typeCondition = "INPUT"
+            filter.input_value = filter.condition == "TRUE"
+            console.log(filter.input_value)
+            condition = "EQ"
+            dataType = "NONE"
+          }
+
+          // Right column
+          if (filter.input_column !== "" && typeCondition == "COLUMN") {
+            let [idxSchema, idxTable, idxColumn] = filter.input_column.split(".")
+            let column = valuesUi.columns.filter(column => column.value == filter.input_column)
+            column = column.length > 0 ? column[0] : {}
+            params.push({
+              type: "COLUMN",
+              table_column: {
+                schema_name: schemas[idxSchema].name,
+                table_name: schemas[idxSchema].tables[idxTable].name,
+                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`, //TODO: Delete AS when in ms accept column_alias
+                alias: column.alias,
+                column_alias: column.name
+              }
+            })
+          }
+
+          // Parameter
+          if (filter.input_value !== "" && typeCondition == "INPUT" || typeCondition == "DATEPICKER") {
+            params.push({
+              type: "PARAM",
+              param: {
+                type_input: dataType,
+                value: condition.includes("ILIKE") ? `%${filter.input_value}%` : filter.input_value
+              }
+            })
+          } 
+
+
+          if (condition != "") {
+            filters.push({
+              type: condition,
+              params,
+              gate_logic_previous: filter.gate
+            })
+          }
+        } else {
+          let groupFilters = generateFilters(filter.filters)
+          filters.push({
+            type: "GROUP",
+            group_conditions: groupFilters,
+            gate_logic_previous: filter.gate
+          })
+        }
+      })
+
+      return filters
     }
 
     return <div className={styles.container}>
