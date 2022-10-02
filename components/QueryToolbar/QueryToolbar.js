@@ -1,3 +1,5 @@
+import { createContext, useContext, useMemo, useState } from "react"
+import { DropdownsProvider } from "../../contexts/DropdownsContext"
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext"
 import queryService from "../../services/queries"
 import DropdownMenu from "../DropdownMenu/DropdownMenu"
@@ -199,22 +201,24 @@ export default function QueryToolbar() {
 
     return <div className={styles.container}>
         <div className={styles.tools}>
-          <DropdownMenu actionComponent={<div className={styles.tool}>Hide fields</div>}>
-            <HideFieldsComponent/>
-          </DropdownMenu>
-          <DropdownMenu actionComponent={<div className={styles.tool}>Filter</div>}>
-            <FilterMenu />
-          </DropdownMenu>
-          <DropdownMenu actionComponent={<div className={styles.tool}>Group</div>}>
-            <div>
-              Aqui el body  
-            </div>
-          </DropdownMenu>
-          <DropdownMenu actionComponent={<div className={styles.tool}>Sort</div>}>
-            <div>
-              Aqui el body  
-            </div>  
-          </DropdownMenu>
+          <DropdownsProvider>
+            <DropdownMenu idx={0} actionComponent={<div className={styles.tool}>Hide fields</div>}>
+              <HideFieldsComponent/>
+            </DropdownMenu>
+            <DropdownMenu idx={1} actionComponent={<div className={styles.tool}>Filter</div>}>
+              <FilterMenu />
+            </DropdownMenu>
+            <DropdownMenu idx={2} actionComponent={<div className={styles.tool}>Group</div>}>
+              <div>
+                Aqui el body  
+              </div>
+            </DropdownMenu>
+            <DropdownMenu idx={3} actionComponent={<div className={styles.tool}>Sort</div>}>
+              <div>
+                Aqui el body  
+              </div>  
+            </DropdownMenu>
+          </DropdownsProvider>
         </div>
         <div className={styles.save_button} onClick={generateQueryJson}>
             Save Query
