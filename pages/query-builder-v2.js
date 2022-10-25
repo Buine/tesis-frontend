@@ -50,7 +50,7 @@ export default function QueryBuilderV2() {
 
     return (
         <main className={styles.main}>
-            <QueryBuilderTabs defaultSelector={router.query.tab ? parseInt(router.query.tab) : 0} tabs={["Query", "Chart"]}>
+            <QueryBuilderTabs tabs={["Query", "Chart"]}>
                 <TabPanel>
                     <QueryBuilder />
                 </TabPanel>

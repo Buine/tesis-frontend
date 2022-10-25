@@ -32,7 +32,7 @@ export default function Queries() {
                         <p>Name database: {database}</p>
                     </div>
                     <div>
-                        <Link href={`/query-builder?integration=${integration}`}>
+                        <Link href={`/query-builder-v2?integration=${integration}&tab=0`}>
                         <div className={styles.button}>
                             Create a new query
                         </div>
@@ -53,12 +53,12 @@ export default function Queries() {
                                     <th>Status</th>
                                     <th>Updated at</th>
                                 </tr>
-                                {queries.forEach(query => {
-                                    let statusColor = query.status == 'SUCCESSFULLY' ? '#86CF4C' : '#FF5454'
+                                {queries.map(query => {
+                                    let statusColor = "SUCCESSFULLY" == 'SUCCESSFULLY' ? '#86CF4C' : '#FF5454'
                                     return (
                                         <tr className={styles.row_query} key={query.code}>
                                             <td>{query.name}</td>
-                                            <td><div><div className={styles.circle} style={{backgroundColor: statusColor}} />{query.status}</div></td>
+                                            <td><div><div className={styles.circle} style={{backgroundColor: statusColor}} />SUCCESSFULLY</div></td>
                                             <td>{query.updated_at}</td>
                                         </tr>
                                     )
