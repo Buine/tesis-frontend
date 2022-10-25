@@ -1,12 +1,16 @@
+import { useRouter } from "next/router"
 import { Children, useState } from "react"
 import styles from "./QueryBuilderTabs.module.css"
 
-export default function QueryBuilderTabs({defaultSelector = 0, tabs, children}) {
-    const [selectTab, setSelectTab] =  useState(defaultSelector)
+export default function QueryBuilderTabs({tabs, children}) {
+    let router = useRouter()
+    const [selectTab, setSelectTab] =  useState(parseInt(router.query.tab))
     
     const handleClick = (e) => {
         let tabSelect = e.target.id
         if (selectTab !=  tabSelect) {
+            router.query.tab = e.target.id
+            router.push(router)
             setSelectTab(e.target.id)
         }
     }

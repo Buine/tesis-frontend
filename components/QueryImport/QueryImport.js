@@ -1,5 +1,6 @@
 import SelectSearch from "react-select-search"
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext";
+import integrationService from "../../services/integrations";
 import { handleFilter } from "../../utils/HandleFilterSelect";
 import MapperTypeDbToPrimitive from "../../utils/MapperTypeDatabaseToPrimitive";
 import InfoIcon from "../../utils/svg/InfoIcon";
@@ -15,23 +16,51 @@ const textByTypes = {
 
 const TableTypes = ["MAIN", "TABLE"]
 
-const options = [
-  {
-    type: "group",
-    name: "public",
-    items: [
-      { name: "integration", value: "1" },
-      { name: "users", value: "2" }
-    ]
-  },
-  {
-    type: "group",
-    name: "admin",
-    items: [
-      { name: "user_group", value: "3" },
-    ]
-  }
-];
+export function GenerateColumns(value, idxImport, copy, queryBuilderData) {
+  copy.columns = copy.columns.filter(column => column.import_id != copy.tables[idxImport].id)
+  copy.columns.forEach((column, idx) => column.id = idx+1)
+
+  let newColumnId = copy.columns.length+1
+  let [schema, table] = value.split(".")
+  let columns = queryBuilderData.schema.schemas[schema].tables[table].columns
+  let newColumns = []
+  columns.forEach((column, idx) => {
+    newColumns.push({
+      id: newColumnId+idx,
+      name: `${copy.tables[idxImport].alias}.${column.name}`,
+      alias: copy.tables[idxImport].alias,
+      value: `${schema}.${table}.${idx}.${copy.tables[idxImport].id}`,
+      import_id: copy.tables[idxImport].id,
+      data_type: MapperTypeDbToPrimitive(column.data_type),
+      status: true,
+      type: "COLUMN"
+    })
+  })
+  copy.columns = [...copy.columns, ...newColumns]
+}
+
+export async function GenerateQueryColumns(value, idxImport, copy, queryBuilderData) {
+  copy.columns = copy.columns.filter(column => column.import_id != copy.tables[idxImport].id)
+  copy.columns.forEach((column, idx) => column.id = idx+1)
+
+  let newColumnId = copy.columns.length+1
+  let columns = await getSchemaByQuery(queryBuilderData.queryRequest.integration_code, value)
+  let newColumns = []
+  columns.schema.forEach((column, idx) => {
+    newColumns.push({
+      id: newColumnId+idx,
+      name: `${copy.tables[idxImport].alias}.${column.name}`,
+      only_name: column.name,
+      alias: copy.tables[idxImport].alias,
+      value: `${value}.${copy.tables[idxImport].id}.${newColumnId+idx}`,
+      import_id: copy.tables[idxImport].id,
+      data_type: MapperTypeDbToPrimitive(column.data_type),
+      status: true,
+      type: "QUERY"
+    })
+  })
+  copy.columns = [...copy.columns, ...newColumns]
+}
 
 export default function QueryImport({type, idxImport = 0}) {
     const { queryBuilderData, dataUi, valuesUi, setValuesUi } = useQueryBuilderContext()
@@ -62,28 +91,26 @@ export default function QueryImport({type, idxImport = 0}) {
       }
 
       // Generate columns
-      copy.columns = copy.columns.filter(column => column.import_id != copy.tables[idxImport].id)
-      copy.columns.forEach((column, idx) => column.id = idx+1)
-
-      let newColumnId = copy.columns.length+1
-      let [schema, table] = value.split(".")
-      let columns = queryBuilderData.schema.schemas[schema].tables[table].columns
-      let newColumns = []
-      columns.forEach((column, idx) => {
-        newColumns.push({
-          id: newColumnId+idx,
-          name: `${copy.tables[idxImport].alias}.${column.name}`,
-          alias: copy.tables[idxImport].alias,
-          value: `${schema}.${table}.${idx}.${copy.tables[idxImport].id}`,
-          import_id: copy.tables[idxImport].id,
-          data_type: MapperTypeDbToPrimitive(column.data_type),
-          status: true
-        })
-      })
-      copy.columns = [...copy.columns, ...newColumns]
+      GenerateColumns(value, idxImport, copy, queryBuilderData)
 
       console.log(copy)
       
+      setValuesUi(copy)
+    }
+
+    const setQueryTableValue = (value) => {
+      if (value == null || value == undefined) { return }
+      let copy = {...valuesUi}
+      if (copy.tables == undefined) {
+        copy.tables = [{type, value, alias: "", id: uuidv4()}]
+      } else {
+        copy.tables[idxImport].value = value
+      }
+
+      GenerateQueryColumns(value, idxImport, copy, queryBuilderData)
+
+      console.log(copy)
+
       setValuesUi(copy)
     }
 
@@ -100,8 +127,8 @@ export default function QueryImport({type, idxImport = 0}) {
               if (tableImport.join && idx != idxImport) {
                 let searchDependency = tableImport.join.filter((join) => {
                   if (join.value) {
-                    let [schema, table] = join.value.split(".")
-                    return `${schema}.${table}` == imports[idxImport].value
+                    let [schema, table, _, id] = join.value.split(".")
+                    return `${schema}.${table}` == imports[idxImport].value && id == imports[idxImport].id
                   }
                   return false
                 })
@@ -203,7 +230,8 @@ export default function QueryImport({type, idxImport = 0}) {
             currentTableColumns.forEach((currentColumn, idxColumn) => {
               listColumns.push({
                 name: currentColumn.name,
-                value: `${idxSchema}.${idxTable}.${idxColumn}.${table.id}`
+                value: `${idxSchema}.${idxTable}.${idxColumn}.${table.id}`,
+                type: "COLUMN"
               })
             })
             listAvailableColumns.push({
@@ -212,8 +240,21 @@ export default function QueryImport({type, idxImport = 0}) {
               items: listColumns
             })
           } else {
-            // TODO: Pending implement logic here (queries)...
-
+            // TODO: Pending implement logic here (queries)... in progress
+            let listColumns = valuesUi.columns.filter(column => {
+              return column.import_id == table.id
+            }).map(
+              column => { return {
+                name: column.name,
+                value: column.value,
+                type: "QUERY"
+              } }
+            )
+            listAvailableColumns.push({
+              type: "group",
+              name: table.alias,
+              items: listColumns
+            })
           }
         })
       }
@@ -236,8 +277,11 @@ export default function QueryImport({type, idxImport = 0}) {
                     /></>}
                     {isQuery && <><label>Query</label>
                     <SelectSearch 
-                        options={options}
+                        options={dataUi.listQueries}
                         filterOptions={handleFilter}
+                        value={valuesUi.tables[idxImport].value}
+                        onChange={setQueryTableValue}
+                        autoFocus={false}
                         search
                     /></>}
                 </div>
@@ -293,4 +337,9 @@ export default function QueryImport({type, idxImport = 0}) {
             </div>
         </ContainerDropdownV2>
     )
+}
+
+const getSchemaByQuery = async (code, query) => {
+  const response = await integrationService.getSchemaByQuery(code, query)
+  return response.res
 }

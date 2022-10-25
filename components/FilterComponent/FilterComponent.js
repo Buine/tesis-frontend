@@ -118,9 +118,6 @@ export default function FilterComponent({ idxFilter, filter, idxParentFilter = u
                                 }))
                             }
                         </SortableList>
-                        {/* {filter.filters.map((currentFilter, idx) => {
-                            return <FilterComponent idxFilter={idx} filter={currentFilter} idxParentFilter={idxFilter} key={idx} />
-                        })}  */}
                         <button className={styles.button} style={{marginTop: "8px"}} onClick={addFilter}>Add filter</button>
                     </div>
                 </>

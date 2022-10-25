@@ -5,10 +5,11 @@ import queryService from "../../services/queries"
 import DropdownMenu from "../DropdownMenu/DropdownMenu"
 import FilterMenu from "../FilterMenu/FilterMenu"
 import HideFieldsComponent from "../HideFieldsComponent/HideFieldsComponent"
+import SortMenu from "../SortMenu/SortMenu"
 import styles from "./QueryToolbar.module.css"
 
 export default function QueryToolbar() {
-    const { queryBuilderData, setQueryBuilderData, valuesUi, setQueryResult } = useQueryBuilderContext()
+    const { queryBuilderData, setQueryBuilderData, valuesUi, setQueryResult, queryResult } = useQueryBuilderContext()
 
     const TableTypes = ["MAIN", "TABLE"]
 
@@ -35,14 +36,21 @@ export default function QueryToolbar() {
               metaTable[`${table.value}.${table.id}`] = {alias: dataTable.alias}
             } else {
               // Query Input Table logic here...
+              dataTable.query_code = idxSchema,
+              dataTable.alias = table.alias
+              metaTable[`${table.value}.${table.id}`] = {alias: dataTable.alias}
             }
             
             // 2. Fill conditional if idx != 0
             if (idx != 0) {
               let [idxSchema, idxTable, idxColumn, idImport] = table.join[0].value.split(".")
-              let leftColumn = `${metaTable[`${idxSchema}.${idxTable}.${idImport}`].alias}.${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`
+              let leftColumn = table.type != "QUERY" 
+              ? `${metaTable[`${idxSchema}.${idxTable}.${idImport}`].alias}.${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`
+              : valuesUi.columns.filter(c => { return c.value == table.join[0].value })[0].name
               let [idxSchema2, idxTable2, idxColumn2, idImport2] = table.join[1].value.split(".")
-              let rigthColumn = `${metaTable[`${idxSchema2}.${idxTable2}.${idImport2}`].alias}.${schemas[idxSchema2].tables[idxTable2].columns[idxColumn2].name}` 
+              let rigthColumn = table.type != "QUERY"
+              ? `${metaTable[`${idxSchema2}.${idxTable2}.${idImport2}`].alias}.${schemas[idxSchema2].tables[idxTable2].columns[idxColumn2].name}` 
+              : valuesUi.columns.filter(c => { return c.value == table.join[1].value })[0].name
               tables.join_conditional = {
                 column_left: leftColumn,
                 column_right: rigthColumn
@@ -62,12 +70,19 @@ export default function QueryToolbar() {
               let [idxSchema, idxTable, idxColumn] = column.value.split(".")
               columns.push({
                 type: "COLUMN",
-                table_column: {
+                table_column: column.type != "QUERY" 
+                ? {
                   schema_name: schemas[idxSchema].name,
                   table_name: schemas[idxSchema].tables[idxTable].name,
-                  column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name} AS ${column.name}`, //TODO: Delete AS when in ms accept column_alias
+                  column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
                   alias: column.alias,
                   column_alias: column.name
+                }
+                : {
+                  alias: column.alias,
+                  column_name: `${column.only_name}`,
+                  column_alias: column.name,
+                  query_column: true
                 }
               })
             }
@@ -78,6 +93,37 @@ export default function QueryToolbar() {
           let filters = generateFilters(valuesUi.filters, schemas)
           query.query_json.filters = filters
           
+          // Sort by
+          let sorts = []
+          valuesUi.sorts.forEach(sort => {
+            if (sort.value != "") {
+              let [idxSchema, idxTable, idxColumn] = sort.value.split(".")
+              let column = valuesUi.columns.filter(column => column.value == sort.value)
+              column = column.length > 0 ? column[0] : {}
+              console.log("Holis", column)
+              let info = column.type != "QUERY" 
+              ? {
+                schema_name: schemas[idxSchema].name,
+                table_name: schemas[idxSchema].tables[idxTable].name,
+                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
+                alias: column.alias,
+                column_alias: column.name
+              }
+              : {
+                alias: column.alias,
+                column_name: `${column.only_name}`,
+                column_alias: column.name,
+                query_column: true
+              }
+              sorts.push(
+                {
+                  type: sort.direction,
+                  ...info
+                }
+              )
+            }
+          })
+          query.query_json.order = sorts
 
           console.log(copy)
           console.log(valuesUi)
@@ -125,12 +171,19 @@ export default function QueryToolbar() {
             dataType = column.data_type
             params.push({
               type: "COLUMN",
-              table_column: {
+              table_column: column.type != "QUERY" 
+              ? {
                 schema_name: schemas[idxSchema].name,
                 table_name: schemas[idxSchema].tables[idxTable].name,
-                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`, //TODO: Delete AS when in ms accept column_alias
+                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
                 alias: column.alias,
                 column_alias: column.name
+              }
+              : {
+                alias: column.alias,
+                column_name: `${column.only_name}`,
+                column_alias: column.name,
+                query_column: true
               }
             })
           }
@@ -157,12 +210,19 @@ export default function QueryToolbar() {
             column = column.length > 0 ? column[0] : {}
             params.push({
               type: "COLUMN",
-              table_column: {
+              table_column: column.type != "QUERY" 
+              ? {
                 schema_name: schemas[idxSchema].name,
                 table_name: schemas[idxSchema].tables[idxTable].name,
-                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`, //TODO: Delete AS when in ms accept column_alias
+                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
                 alias: column.alias,
                 column_alias: column.name
+              }
+              : {
+                alias: column.alias,
+                column_name: `${column.only_name}`,
+                column_alias: column.name,
+                query_column: true
               }
             })
           }
@@ -214,14 +274,17 @@ export default function QueryToolbar() {
               </div>
             </DropdownMenu>
             <DropdownMenu idx={3} actionComponent={<div className={styles.tool}>Sort</div>}>
-              <div>
-                Aqui el body  
-              </div>  
+              <SortMenu />
             </DropdownMenu>
           </DropdownsProvider>
         </div>
-        <div className={styles.save_button} onClick={generateQueryJson}>
-            Save Query
+        <div className={styles.tools}>
+          <div className={styles.save_button} onClick={generateQueryJson}>
+              Run Query
+          </div>
+          <div className={styles.save_button} onClick={() => saveQuery(queryBuilderData, setQueryBuilderData, queryResult)}>
+              Save Query
+          </div>
         </div>
     </div>
 }
@@ -230,10 +293,41 @@ function executeQuery(queryBuilderData, setQueryResult) {
     let start = performance.now()
     queryService.runQuery(queryBuilderData.queryRequest).then((response) => {
         if(!response.err) {
-            setQueryResult({ response: response.res.data, time: performance.now()-start })
+            setQueryResult({ response: response.res.data, time: performance.now()-start, schema: response.res.schema, sql: response.res.sql })
         } else {
             alert(JSON.stringify(response.err))
             console.error(response.err)
         }
     })
+}
+
+function saveQuery(queryBuilderData, setQueryBuilderData, queryResult) {
+  if (!queryBuilderData.isNewQuery) {
+    // Update query
+    return
+  }
+  if (queryResult.time == undefined) {
+    alert("Is need run query before save or update.")
+  } else {
+    let queryName = prompt("Please enter your query name", "Untitled");
+    if (!queryName) { return }
+    let copy = { ...queryBuilderData.queryRequest }
+    copy["schema"] = queryResult.schema
+    copy["name"] = queryName
+    copy["sql"] = queryResult.sql
+    copy["json"] = copy["query_json"]
+    copy["query_json"] = null
+    queryService.saveQuery(copy).then((response) => {
+      if(response.err) {
+        alert(JSON.stringify(response.err))
+        console.error(response.err)
+      } else {
+        console.log(response)
+        let copyBuilder = { ...queryBuilderData }
+        copyBuilder.queryRequest.name = queryName
+        copyBuilder.isNewQuery = false
+        setQueryBuilderData(copyBuilder)
+      }
+    })
+  }
 }

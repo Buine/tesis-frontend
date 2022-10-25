@@ -20,17 +20,25 @@ export const QueryBuilderProvider = ({children}) => {
                 order: []
             }
         },
-        tablesInSchema:[]
+        chartConfig: {
+            type: "",
+            properties: {}
+        },
+        tablesInSchema:[],
+        isNewQuery: true
     })
 
     const [queryResult, setQueryResult] = useState({response: []})
     const [valuesUi, setValuesUi] = useState({
         columns: [],
         tables: [{type: "MAIN", value: null, alias: "", id: uuidv4()}], 
-        filters: []
+        filters: [],
+        sorts: []
     })
     const [dataUi, setDataUi] = useState({
         listNativeTables: [],
+        listQueries: [],
+        idxSchemaByTableNameWithSchema: {},
         availableTables: [],
         availableColumns: [],
         availableQueryColumns: []

@@ -1,5 +1,6 @@
 import { useRouter } from "next/router"
 import { useEffect } from "react"
+import ChartSection from "../components/ChartSection/ChartSection"
 import QueryBuilder from "../components/QueryBuilder/QueryBuilder"
 import QueryBuilderTabs, { TabPanel } from "../components/QueryBuilderTabs/QueryBuilderTabs"
 import useQueryBuilderContext from "../contexts/QueryBuilderContext"
@@ -28,19 +29,33 @@ export default function QueryBuilderV2() {
                 }
             })
         }
+
+        if (integration && queryBuilderData.queries == undefined) {
+            integrationService.getAllQueriesByIntegration(integration).then(response => {
+                if (!response.err) {
+                    let copy = {
+                        ...queryBuilderData
+                    }
+                    copy.queries = response.res
+                    setQueryBuilderData(copy)
+                    generateListQueries(copy.queries, dataUi, setDataUi)
+                } else {
+                    alert(JSON.stringify(response.err))
+                    console.error(response.err)
+                }
+            })
+        }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [integration])
+    }, [integration, dataUi])
 
     return (
         <main className={styles.main}>
-            <QueryBuilderTabs tabs={["Query", "Chart"]}>
+            <QueryBuilderTabs defaultSelector={router.query.tab ? parseInt(router.query.tab) : 0} tabs={["Query", "Chart"]}>
                 <TabPanel>
                     <QueryBuilder />
                 </TabPanel>
                 <TabPanel>
-                    <div>
-                    Aqui estara la seccion para realizar reportes/graficas.
-                    </div>
+                    <ChartSection />
                 </TabPanel>
             </QueryBuilderTabs>
         </main>
@@ -49,12 +64,18 @@ export default function QueryBuilderV2() {
 
 const setDataInit = (schemas, dataUi, setDataUi) => {
     let listNativeTables = [{name: "Select a table..", value: null}]
+    let idxSchemaByTableNameWithSchema = {}
     if (schemas) {
         let idxTable = 0
         schemas.forEach((schema, idxSchema) => {
             let listNativeSchemaTables = []
             if (schema) {
                 schema.tables.forEach(table => {
+                    if (table.columns) {
+                        table.columns.forEach((column, idxColumn) => {
+                            idxSchemaByTableNameWithSchema[`${schema.name}.${table.name}.${column.name}`] = `${idxSchema}.${idxTable}.${idxColumn}`
+                        })
+                    }
                     listNativeSchemaTables.push(
                         {
                             name: table.name,
@@ -74,6 +95,23 @@ const setDataInit = (schemas, dataUi, setDataUi) => {
 
     let copy = { ...dataUi }
     copy.listNativeTables = listNativeTables
+    copy.idxSchemaByTableNameWithSchema = idxSchemaByTableNameWithSchema
     console.log(listNativeTables)
+    console.log(idxSchemaByTableNameWithSchema)
+    setDataUi(copy)
+}
+
+const generateListQueries = (queries, dataUi, setDataUi) => {
+    let listQueries = [{name: "Select a query..", value: null}]
+    queries.forEach(query => {
+        listQueries.push({
+            value: query.code,
+            name: query.name,
+            sql: query.sql
+        })
+    })
+
+    let copy = { ...dataUi }
+    copy.listQueries = listQueries
     setDataUi(copy)
 }

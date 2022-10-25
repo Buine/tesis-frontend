@@ -9,13 +9,16 @@ const Services = {
         createIntegration: `${PUBLIC_API_URL}/v1/integration`,
         getAllIntegrations: `${PUBLIC_API_URL}/v1/integration`,
         getIntegrationByCode: (code) => `${PUBLIC_API_URL}/v1/integration/${code}`,
+        getAllQueriesByIntegration: (code) => `${PUBLIC_API_URL}/v1/integration/${code}/queries`,
         updateIntegrationByCode: (code) => `${PUBLIC_API_URL}/v1/integration/${code}`,
         deleteIntegrationByCode: (code) => `${PUBLIC_API_URL}/v1/integration/${code}`,
-        getSchema: (code) => `${PUBLIC_API_URL}/v1/integration/${code}/schema`
+        getSchema: (code) => `${PUBLIC_API_URL}/v1/integration/${code}/schema`,
+        getSchemaByQuery: (code, query, json = false) => `${PUBLIC_API_URL}/v1/integration/${code}/query/${query}?with_json=${json}`
     },
     Queries: {
         getAllByIntegratonCode: (code) => `${PUBLIC_API_URL}/v1/integration/${code}/queries`,
-        runQuery: `${PUBLIC_API_URL}/v1/query/run`
+        runQuery: `${PUBLIC_API_URL}/v1/query/run`,
+        saveQuery: `${PUBLIC_API_URL}/v1/query`
     }
 }
 
