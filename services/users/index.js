@@ -1,4 +1,5 @@
 import { BehaviorSubject } from 'rxjs';
+import validateRequest from '../../utils/validateRequest';
 import LogInService from './logInService';
 import SignUpService from './signUpService';
 
@@ -12,20 +13,18 @@ const userService = {
     signUp
 }
 
-function logIn(userLoginData) {
-    return LogInService(userLoginData).then(response => {
-        if (response.ok) {
-            response.json().then(userData => {
-                userSubject.next(userData)
-                localStorage.setItem("Authorization", response.headers.get("Authorization"))
-                localStorage.setItem("User", JSON.stringify(userData))
-            })
-        }
+async function logIn(userLoginData) {
+    let response = await LogInService(userLoginData)
+    return await validateRequest(response, (userData) => {
+        userSubject.next(userData)
+        localStorage.setItem("Authorization", response.headers.get("Authorization"))
+        localStorage.setItem("User", JSON.stringify(userData))
     })
 }
 
-function signUp (userSignUpData) {
-    return SignUpService(userSignUpData)
+async function signUp (userSignUpData) {
+    let response = await SignUpService(userSignUpData)
+    return await validateRequest(response)
 }
 
 function logOut()  {

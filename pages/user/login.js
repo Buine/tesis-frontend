@@ -13,7 +13,7 @@ export default function Login() {
     }
 
     const handleSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault()
         return userService
         .logIn(userLoginData).then(() => {
             router.push("/")
@@ -21,7 +21,22 @@ export default function Login() {
     }
 
     return (
-        <div>
+        <div style={{
+            //width: '501.41px', 
+            //height: '405.65px'
+    
+            // width: 501.41px;
+            // height: 405.65px;
+            // border-radius: 15px;
+            // border-style: inset;
+            // border-width: 1.5px;
+            // border-color: black;
+            // margin: 10px;
+            // display: flex;
+            // flex-direction: column;
+            // justify-content: center;
+            // align-items: center;
+        }}>
             <h1>Log in</h1>
             <form onSubmit={handleSubmit}>
                 <input

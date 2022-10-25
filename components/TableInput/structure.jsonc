@@ -1,0 +1,91 @@
+{
+    // |---------------------------> Backend Requests <--------------------------------|
+    // Data provided by backend
+
+    "query": {},
+
+    // Request Info from Backend Database Schema
+    "schema": {},
+
+    "queries": [
+        {
+            // Response Info from Backend Query Schema
+        }
+    ],
+
+    // |---------------------------> Data for UI <--------------------------------|
+    // Generate with data from up
+    
+    // From schema object
+    "availableTables": [
+        {
+            "name": "Schema.Table",
+            "schemaIndex": 0,
+            "tableIndex": 1,
+            "foreignKeys": [
+                {
+                    "from": "Schema",
+                    "name": "Table.Column"
+                }
+            ]
+        }
+    ],
+
+    // From schema object, filtered by tables object
+    "availableColumns": [
+        {
+            "from": "Schema.Table",
+            "name": "Column",
+            "alias": "",
+            "type": "TypeData"
+        }
+    ],
+
+    // From query schema object, all in array queries
+    "availableQueryColumns": [
+        {
+            "query_code": "QueryCode",
+            "from": "QueryName",
+            "name": "Column",
+            "alias": "",
+            "id": "id from table in value",
+            "type": "TypeData"
+        }
+    ],
+
+    // |---------------------------> Values dinamics for UI <--------------------------------|
+    // Generate with data from backend requests
+
+    // Tables Select
+    "tables": {
+        "type": "TABLE/QUERY", // Select
+        "value": "Schema.Table/AliasQuery", // Select
+        "queryCode": "QueryCode/null", // Metadata if query
+        "id": "generateRandom", // Metadata
+        "joins": [
+            {
+                "type": "TABLE/QUERY", // Select
+                "value": "Schema.Table/AliasQuery", // Select
+                "queryCode": "QueryCode/null", // Metadata if query
+                "columnLeftValue": "Schema.Table.Column/AliasQuery.Column",
+                "columnRightValue": "Schema.Table.Column/AliasQuery.Column"
+            }
+        ]
+    }, // => GetValueMainTable(from.name)
+
+    "filters": [
+        {
+            "type": "FilterType",
+            
+            // For now 2 default params
+            "params": [
+                {
+                    "type": "FUNCTION/PARAM/QUERY_COLUMN/TABLE_COLUMN",
+                    "value": ""
+                }
+            ]
+        }
+    ]
+}
+
+// Random idea: color code for schema or tables, for prevent write full name structure like schema.table.column

@@ -1,0 +1,33 @@
+.header {
+    font-size: 13px;
+    color: rgb(115, 115, 115);
+}
+
+.container_filters {
+    margin: 10px 0px;
+}
+
+.buttons_controller {
+    display: flex;
+    justify-content: space-between;
+    width: 250px;
+}
+
+.button {
+    margin-top: 5px;
+    height: 30px;
+    background: rgb(234, 234, 234);
+    border: 0;
+    border-radius: 0px;
+    color: rgb(0, 0, 0);
+    font-size: 12px;
+    cursor: pointer;
+    width: 49%;
+}
+
+.filter {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+    align-items: center;
+}
