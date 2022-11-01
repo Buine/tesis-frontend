@@ -76,3 +76,12 @@
 .input_div:last-child {
     margin-bottom: 5px;
 }
+
+.input {
+    border: none;
+    border-radius: 0;
+    background-color: #EBEBEB;
+    height: 30px;
+    font-size: 13px;
+    padding: 0 8px;
+}

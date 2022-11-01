@@ -22,7 +22,9 @@ export const QueryBuilderProvider = ({children}) => {
         },
         chartConfig: {
             type: "",
-            properties: {}
+            properties: {
+                textChart: ""
+            }
         },
         tablesInSchema:[],
         isNewQuery: true
@@ -31,6 +33,9 @@ export const QueryBuilderProvider = ({children}) => {
     const [queryResult, setQueryResult] = useState({response: []})
     const [valuesUi, setValuesUi] = useState({
         columns: [],
+        alternativeColumns: [],
+        aggFunctions: [],
+        groups: [],
         tables: [{type: "MAIN", value: null, alias: "", id: uuidv4()}], 
         filters: [],
         sorts: []

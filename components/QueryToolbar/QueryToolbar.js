@@ -2,8 +2,10 @@ import { createContext, useContext, useMemo, useState } from "react"
 import { DropdownsProvider } from "../../contexts/DropdownsContext"
 import useQueryBuilderContext from "../../contexts/QueryBuilderContext"
 import queryService from "../../services/queries"
+import uuidv4 from "../../utils/uuidGenerator"
 import DropdownMenu from "../DropdownMenu/DropdownMenu"
 import FilterMenu from "../FilterMenu/FilterMenu"
+import GroupByComponent from "../GroupByComponent/GroupByComponent"
 import HideFieldsComponent from "../HideFieldsComponent/HideFieldsComponent"
 import SortMenu from "../SortMenu/SortMenu"
 import styles from "./QueryToolbar.module.css"
@@ -64,27 +66,59 @@ export default function QueryToolbar() {
   
           // Select
           let columns = []
-          let selectColumns = valuesUi.columns
+          let selectColumns = valuesUi.alternativeColumns.length == 0 ? valuesUi.columns : valuesUi.alternativeColumns
+          console.log("Aqui", selectColumns)
           selectColumns.forEach(column => {
             if (column.alias != "" && column.status) {
               let [idxSchema, idxTable, idxColumn] = column.value.split(".")
-              columns.push({
-                type: "COLUMN",
-                table_column: column.type != "QUERY" 
-                ? {
-                  schema_name: schemas[idxSchema].name,
-                  table_name: schemas[idxSchema].tables[idxTable].name,
-                  column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
-                  alias: column.alias,
-                  column_alias: column.name
+              if (column.type == "GENERATED") {
+                let generateColumn = {
+                  type: "GENERATED",
+                  generated_column: {
+                    name: `${column.function} of ${column.name}`,
+                    function_name: column.function,
+                    group_required: true,
+                    params: [
+                      {
+                        type: "COLUMN",
+                        table_column: column.type != "QUERY" 
+                        ? {
+                          schema_name: schemas[idxSchema].name,
+                          table_name: schemas[idxSchema].tables[idxTable].name,
+                          column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
+                          alias: column.alias,
+                          column_alias: column.name
+                        }
+                        : {
+                          alias: column.alias,
+                          column_name: `${column.only_name}`,
+                          column_alias: column.name,
+                          query_column: true
+                        }
+                      }
+                    ]
+                  }
                 }
-                : {
-                  alias: column.alias,
-                  column_name: `${column.only_name}`,
-                  column_alias: column.name,
-                  query_column: true
-                }
-              })
+                columns.push(generateColumn)
+              } else {
+                columns.push({
+                  type: "COLUMN",
+                  table_column: column.type != "QUERY" 
+                  ? {
+                    schema_name: schemas[idxSchema].name,
+                    table_name: schemas[idxSchema].tables[idxTable].name,
+                    column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
+                    alias: column.alias,
+                    column_alias: column.name
+                  }
+                  : {
+                    alias: column.alias,
+                    column_name: `${column.only_name}`,
+                    column_alias: column.name,
+                    query_column: true
+                  }
+                })
+              }
             }
           })
           query.query_json.columns = columns
@@ -124,6 +158,34 @@ export default function QueryToolbar() {
             }
           })
           query.query_json.order = sorts
+
+          // Groups by
+          let groups = []
+          valuesUi.groups.forEach(group => {
+            if (group.value != "") {
+              let [idxSchema, idxTable, idxColumn] = group.value.split(".")
+              let column = valuesUi.columns.filter(column => column.value == group.value)
+              column = column.length > 0 ? column[0] : {}
+              console.log("Holis", column)
+              let info = column.type != "QUERY" 
+              ? {
+                schema_name: schemas[idxSchema].name,
+                table_name: schemas[idxSchema].tables[idxTable].name,
+                column_name: `${schemas[idxSchema].tables[idxTable].columns[idxColumn].name}`,
+                alias: column.alias,
+                column_alias: column.name
+              }
+              : {
+                alias: column.alias,
+                column_name: `${column.only_name}`,
+                column_alias: column.name,
+                query_column: true
+              }
+              groups.push(info)
+            }
+          })
+          
+          query.query_json.group_by = groups
 
           console.log(copy)
           console.log(valuesUi)
@@ -269,9 +331,7 @@ export default function QueryToolbar() {
               <FilterMenu />
             </DropdownMenu>
             <DropdownMenu idx={2} actionComponent={<div className={styles.tool}>Group</div>}>
-              <div>
-                Aqui el body  
-              </div>
+              <GroupByComponent />
             </DropdownMenu>
             <DropdownMenu idx={3} actionComponent={<div className={styles.tool}>Sort</div>}>
               <SortMenu />

@@ -72,7 +72,8 @@ const listTypeCharts = [
 
 export default function ChartSection() {
     let { queryResult, queryBuilderData, setQueryBuilderData, valuesUi } = useQueryBuilderContext()
-    let columnsOptions = [{ name: "Select a column...", value: "" }, ...valuesUi.columns.map(column => { return { name: column.name, value: column.value, data_type: column.data_type } })]
+    let currentColumns = valuesUi.alternativeColumns.length == 0 ? valuesUi.columns : valuesUi.alternativeColumns
+    let columnsOptions = [{ name: "Select a column...", value: "" }, ...currentColumns.map(column => { return { name: column.alternativeName ? column.alternativeName : column.name, value: column.id_ext ? column.id_ext : column.value, data_type: column.data_type } })]
 
     const [chartData, setChartData] = useState(defaultData)
 
@@ -83,17 +84,20 @@ export default function ChartSection() {
     const getColumns = useCallback(() => {
         let copy = { ...chartData }
         let properties = queryBuilderData.chartConfig.properties
+        let currentColumns = valuesUi.alternativeColumns.length == 0 ? valuesUi.columns : valuesUi.alternativeColumns
 
-        let nameColumnLabel = valuesUi.columns.filter(c => { return c.value == properties.labelInput })
+        let nameColumnLabel = currentColumns.filter(c => { return c.value == properties.labelInput || c.id_ext == properties.labelInput })
         nameColumnLabel = nameColumnLabel[0] ? nameColumnLabel[0].name : null
-        console.log(nameColumnLabel)
+        console.log("label", nameColumnLabel)
         copy.labels = nameColumnLabel ? queryResult.response.map(c => { return c[nameColumnLabel] }) : []
 
-        let nameColumnValues = valuesUi.columns.filter(c => { return c.value == properties.valueInput })
-        nameColumnValues = nameColumnValues[0] ? nameColumnValues[0].name : null
+        let nameColumnValues = currentColumns.filter(c => { return c.value == properties.valueInput || c.id_ext == properties.valueInput })
+        nameColumnValues = nameColumnValues[0] ? nameColumnValues[0].alternativeName ? nameColumnValues[0].alternativeName : nameColumnValues[0].name : null // TODO: FIX THAT SHIT WHEN FUNCTIONS ALIAS WORKS
         console.log(nameColumnValues)
         copy.datasets[0].data = nameColumnLabel ? queryResult.response.map(c => { return c[nameColumnValues] }) : []
         console.log(copy.datasets[0].data)
+
+        copy.datasets[0].label = properties.textChart
 
         return copy
     }, [queryBuilderData, queryResult, chartData, valuesUi])
@@ -154,6 +158,14 @@ export default function ChartSection() {
                                 autoFocus={false}
                                 search
                             />
+                        </div>
+                        <div className={styles.input_div}>
+                            <label>Text in chart</label>
+                            <input className={styles.input} value={queryBuilderData.chartConfig.properties.textChart} onChange={(evt) => {
+                                    let copy = { ...queryBuilderData }
+                                    copy.chartConfig.properties.textChart = evt.target.value
+                                    setQueryBuilderData(copy)
+                                }} />
                         </div>
                     </div>
                 </div>

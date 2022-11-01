@@ -18,11 +18,13 @@ export default function HotComponent() {
   const getColumns = useCallback(() => {
     let columns = []
     if (valuesUi.columns.length > 0) {
-      valuesUi.columns.forEach(column => {
+      let columnsRef = valuesUi.alternativeColumns.length == 0 ? valuesUi.columns : valuesUi.alternativeColumns
+      columnsRef.forEach(column => {
         if (column.alias != "" && column.status) {
+          let fixTemp = column.alternativeName ? column.alternativeName : column.name // TODO: FIX 
           columns.push({
-            data: column.name,
-            title: column.name
+            data: fixTemp,
+            title: fixTemp
           })
         }
       });
@@ -35,7 +37,7 @@ export default function HotComponent() {
     console.log(queryResult)
 
     return columns
-  }, [queryResult, valuesUi.columns])
+  }, [queryResult, valuesUi.columns, valuesUi.alternativeColumns])
 
   return (
         <HotTable
