@@ -1,10 +1,7 @@
 import { HotTable } from '@handsontable/react';
-import { registerAllModules } from 'handsontable/registry';
 import 'handsontable/dist/handsontable.full.css';
 import useQueryBuilderContext from '../../contexts/QueryBuilderContext';
 import { useCallback, useEffect, useState } from 'react';
-
-registerAllModules()
 
 export default function HotComponent() {
 

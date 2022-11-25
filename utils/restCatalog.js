@@ -1,4 +1,4 @@
-const PUBLIC_API_URL = process.env.NEXT_PUBLIC_API_URL
+const PUBLIC_API_URL = "/public-api"
 
 const Services = {
     Users: {

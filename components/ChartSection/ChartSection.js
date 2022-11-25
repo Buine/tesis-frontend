@@ -159,14 +159,14 @@ export default function ChartSection() {
                                 search
                             />
                         </div>
-                        <div className={styles.input_div}>
-                            <label>Text in chart</label>
+                        {queryBuilderData.chartConfig.type != "PIE" && <div className={styles.input_div}>
+                            <label>Unit label data</label>
                             <input className={styles.input} value={queryBuilderData.chartConfig.properties.textChart} onChange={(evt) => {
                                     let copy = { ...queryBuilderData }
                                     copy.chartConfig.properties.textChart = evt.target.value
                                     setQueryBuilderData(copy)
                                 }} />
-                        </div>
+                        </div>}
                     </div>
                 </div>
             </div>

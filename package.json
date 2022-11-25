@@ -9,10 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@handsontable/react": "12.1.2",
+    "@handsontable/react": "^4.0.0",
     "@omakase-ui/react-sortable-list": "^0.0.1",
     "chart.js": "^3.9.1",
-    "handsontable": "12.1.2",
+    "handsontable": "^8.2.0",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-chartjs-2": "^4.3.1",
