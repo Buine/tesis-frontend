@@ -32,7 +32,7 @@ export default function Queries() {
                         <p>Name database: {database}</p>
                     </div>
                     <div>
-                        <Link href={`/query-builder-v2?integration=${integration}&tab=0`}>
+                    <Link href={`/query-builder-v2?integration=${integration}&tab=0`}>
                         <div className={styles.button}>
                             Create a new query
                         </div>
@@ -51,23 +51,18 @@ export default function Queries() {
                                 <tr>
                                     <th>Name</th>
                                     <th>Status</th>
-                                    <th>Updated at</th>
                                 </tr>
                                 {queries.map(query => {
                                     let statusColor = "SUCCESSFULLY" == 'SUCCESSFULLY' ? '#86CF4C' : '#FF5454'
                                     return (
-                                        <tr className={styles.row_query} key={query.code}>
-                                            <td>{query.name}</td>
-                                            <td><div><div className={styles.circle} style={{backgroundColor: statusColor}} />SUCCESSFULLY</div></td>
-                                            <td>{query.updated_at}</td>
-                                        </tr>
+                                        <Link href={`/query-builder-v2?integration=${integration}&query=${query.code}&tab=0`} key={query.code}>
+                                            <tr className={styles.row_query} key={query.code}>
+                                                <td>{query.name}</td>
+                                                <td><div><div className={styles.circle} style={{backgroundColor: statusColor}} />SUCCESSFULLY</div></td>
+                                            </tr>
+                                        </Link>
                                     )
                                 })}
-                                <tr className={styles.row_query}>
-                                    <td>List clients by revenue every month of year 2021</td>
-                                    <td><div><div className={styles.circle} style={{backgroundColor: '#86CF4C'}} />SUCCESSFULLY</div></td>
-                                    <td>Friday 19 Aug 5:26PM</td>
-                                </tr>
                             </tbody>
                         </table>
                     </div>

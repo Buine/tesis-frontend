@@ -1,4 +1,4 @@
-const PUBLIC_API_URL = "/public-api"
+const PUBLIC_API_URL = "http://localhost:80/public-api"
 
 const Services = {
     Users: {
@@ -17,6 +17,7 @@ const Services = {
     },
     Queries: {
         getAllByIntegratonCode: (code) => `${PUBLIC_API_URL}/v1/integration/${code}/queries`,
+        getQuery: (integration, query, json = true) => `${PUBLIC_API_URL}/v1/integration/${integration}/query/${query}?with_json=${json}`,
         runQuery: `${PUBLIC_API_URL}/v1/query/run`,
         saveQuery: `${PUBLIC_API_URL}/v1/query`
     }

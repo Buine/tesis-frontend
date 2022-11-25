@@ -77,7 +77,7 @@ export default function FilterMenu({...props}) {
             </SortableList>
         </div>
         <div className={styles.buttons_controller}>
-            <button className={styles.button} onClick={addFilter}>➕ Add filter</button>
+            <button className={styles.button} onClick={() => addFilter()}>➕ Add filter</button>
             <button className={styles.button} onClick={() => addFilter("GROUP")}>➕ Add group filter</button>
         </div>
     </>

@@ -21,7 +21,7 @@ export default function Login() {
             router.push("/")
         }).catch(err => {
             console.error(err)
-            alert(err)
+            alert("The username or password is incorrect")
         })
     }
 

@@ -21,7 +21,7 @@ export default function SignUp() {
             router.push("/user/login")
         }).catch(err => {
             console.error(err)
-            alert(err)
+            alert("An unexpected error has occurred, try again later.")
         })
     }
 

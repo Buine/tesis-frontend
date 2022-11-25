@@ -1,12 +1,14 @@
 import validateRequest from "../../utils/validateRequest"
 import getAllQueriesByIntegrationCode from "./getAllQueriesByIntegrationCode"
+import GetQuery from "./getQuery"
 import RunQuery from "./runQuery"
 import SaveQuery from "./saveQuery"
 
 const queryService = {
     getAllQueries,
     runQuery,
-    saveQuery
+    saveQuery,
+    getQuery
 }
 
 async function getAllQueries(integrationCode) {
@@ -21,6 +23,11 @@ async function runQuery(requestBody) {
 
 async function saveQuery(requestBody) {
     var response = await SaveQuery(requestBody)
+    return await validateRequest(response)
+}
+
+async function getQuery(integration, query, json = true) {
+    var response = await GetQuery(integration, query, json)
     return await validateRequest(response)
 }
 

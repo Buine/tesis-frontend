@@ -5,15 +5,22 @@ import QueryBuilder from "../components/QueryBuilder/QueryBuilder"
 import QueryBuilderTabs, { TabPanel } from "../components/QueryBuilderTabs/QueryBuilderTabs"
 import useQueryBuilderContext from "../contexts/QueryBuilderContext"
 import integrationService from "../services/integrations"
+import queryService from "../services/queries"
 import styles from "../styles/QueryBuilderV2.module.css"
 
 export default function QueryBuilderV2() {
     const router = useRouter()
-    const { integration } = router.query
-    const { queryBuilderData, setQueryBuilderData, dataUi, setDataUi  } = useQueryBuilderContext()
+    const { integration, query } = router.query
+    const { 
+        queryBuilderData,
+        setQueryBuilderData,
+        setQueryResult,
+        setValuesUi,
+        dataUi, 
+        setDataUi } = useQueryBuilderContext()
     
     useEffect(() => {
-        if (integration && queryBuilderData.schema == undefined) {
+        if (integration && queryBuilderData.schema == undefined && !query) {
             integrationService.getSchemaByCode(integration).then(response => {
                 if (!response.err) {
                     let copy = {
@@ -30,7 +37,7 @@ export default function QueryBuilderV2() {
             })
         }
 
-        if (integration && queryBuilderData.queries == undefined) {
+        if (integration && queryBuilderData.queries == undefined && !query) {
             integrationService.getAllQueriesByIntegration(integration).then(response => {
                 if (!response.err) {
                     let copy = {
@@ -39,6 +46,30 @@ export default function QueryBuilderV2() {
                     copy.queries = response.res
                     setQueryBuilderData(copy)
                     generateListQueries(copy.queries, dataUi, setDataUi)
+                } else {
+                    alert(JSON.stringify(response.err))
+                    console.error(response.err)
+                }
+            })
+        }
+
+        if (integration && query) {
+            if (queryBuilderData.queryCode == query) {
+                return
+            }
+            queryService.getQuery(integration, query).then(response => {
+                if (!response.err) {
+                    let json = response.res.json
+                    if (json) {
+                        if (json.queryBuilderData) 
+                            setQueryBuilderData({...json.queryBuilderData, queryCode: query})
+                        if (json.queryResult)
+                            setQueryResult(json.queryResult)
+                        if (json.valuesUi)
+                            setValuesUi(json.valuesUi)
+                        if (json.dataUi)
+                            setDataUi(json.dataUi)
+                    }
                 } else {
                     alert(JSON.stringify(response.err))
                     console.error(response.err)
