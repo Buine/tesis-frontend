@@ -46,6 +46,9 @@ export default function Home() {
         <div className={styles.container}>
           <h2>Lastest integrations</h2>
           <p>List integration order by last created</p>
+          { integrations.length == 0 && <div style={{margin: '20px'}}>
+            <p>😨 You don&apos;t have any integrations created yet</p>
+          </div> }
           <div className={styles.integrations}>
             {integrations.map((currentIntegration) => {
               let statusColor = currentIntegration.status == 'SUCCESSFULLY' ? '#86CF4C' : '#FF5454'

@@ -52,6 +52,12 @@ export default function Queries() {
                                     <th>Name</th>
                                     <th>Status</th>
                                 </tr>
+                                { queries.length == 0 &&
+                                    <tr className={styles.row_query}>
+                                        <td>😨 You still do not have created queries</td>
+                                        <td>Try to create with the button &quot;Create a new query&quot;</td>
+                                    </tr>
+                                }
                                 {queries.map(query => {
                                     let statusColor = "SUCCESSFULLY" == 'SUCCESSFULLY' ? '#86CF4C' : '#FF5454'
                                     return (
