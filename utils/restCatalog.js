@@ -1,4 +1,4 @@
-const PUBLIC_API_URL = "http://localhost:80/public-api"
+const PUBLIC_API_URL = "/public-api"
 
 const Services = {
     Users: {
