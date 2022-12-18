@@ -65,8 +65,10 @@ export default function QueryBuilderV2() {
                             setQueryBuilderData({...json.queryBuilderData, queryCode: query})
                         if (json.queryResult)
                             setQueryResult(json.queryResult)
-                        if (json.valuesUi)
+                        if (json.valuesUi) {
+                            dateFormatValuesUi(json.valuesUi)
                             setValuesUi(json.valuesUi)
+                        }
                         if (json.dataUi)
                             setDataUi(json.dataUi)
                     }
@@ -91,6 +93,18 @@ export default function QueryBuilderV2() {
             </QueryBuilderTabs>
         </main>
     )
+}
+
+const dateFormatValuesUi = (valuesUi) => {
+    if (valuesUi.filters) {
+        valuesUi.filters.forEach((filter) => {
+             if (filter.sub_condition && filter.sub_condition.includes("DATEPICKER")) {
+                if (filter.input_value) {
+                    filter.input_value = new Date(filter.input_value)
+                }
+             }
+        }) 
+    }
 }
 
 const setDataInit = (schemas, dataUi, setDataUi) => {
